@@ -155,3 +155,43 @@ Even though Server Actions feel like local functions, they are public HTTP endpo
 - **Hidden, not Secret:** The `Next-Action` ID is in the client bundle. A malicious actor can call it directly via `curl` or Postman, bypassing your UI.
 
 </details>
+
+---
+
+## 🖋️ Typography as Infrastructure
+
+**The Problem:** Fonts are heavy assets. Loading them incorrectly causes **FOIT** (Flash of Invisible Text) or **FOUT** (Flash of Unstyled Text), leading to **Cumulative Layout Shift (CLS)**—where the page "jumps" as the font swaps, hurting user trust and SEO.
+
+### 1. The `next/font` Mental Model
+- **Build-Time Optimization:** Next.js downloads Google Fonts at build time. The user's browser doesn't have to talk to Google's servers, improving privacy and speed.
+- **Zero Layout Shift:** The framework calculates "fallback" font adjustments so that the system font takes up the exact same space as the custom font before it loads.
+
+### 2. The Three Categories of Fonts (Product Perspective)
+
+| Category      | The Vibe                  | Best Used For...                                                                 |
+| :------------ | :------------------------ | :------------------------------------------------------------------------------- |
+| **Sans-Serif**| Modern, Clean, Tech       | **UI & Buttons.** Highly readable on screens at small sizes. (e.g., Roboto).     |
+| **Serif**     | Formal, Trustworthy       | **Long-form reading.** The "feet" guide the eye across lines of text.            |
+| **Monospace** | Technical, Precise        | **Code & Data.** Every letter has the same width; things line up vertically.    |
+
+---
+
+## 🎨 Visual Hierarchy & Accessibility
+
+**The First Principle: Legibility**
+A product’s primary job is to communicate. If the contrast ratio is too low (e.g., light gray text on a white background), the product fails for users with visual impairments or those in high-glare environments.
+
+**Key Considerations:**
+- **Contrast Ratios:** Aim for WCAG standards to ensure your "clean" design is actually usable.
+- **Variable Fonts:** Use them to reduce total file weight; one file can handle multiple "weights" (Bold, Thin, etc.), saving bandwidth.
+- **Design Tokens:** Use standardized color scales (like Tailwind's `gray-100` to `gray-900`) instead of random hex codes to maintain a consistent hierarchy.
+
+---
+
+## 🛠️ Best Practices Summary
+
+1. **Respect the Speed of Light:** Keep your compute (Server Actions) as close to your data (Database) as possible.
+2. **Stream Early:** Don't let a slow database query block the entire page. Use Streaming to show the "Static Shell" immediately.
+3. **Never Trust the Client:** Always re-authorize users inside Server Actions.
+4. **Fonts are not Decoration:** They are the voice of your product. Optimize their loading to prevent layout shifts.
+5. **Visual Hierarchy:** Use color and weight to guide the user's eye to the most important action (the "Primary CTA").
