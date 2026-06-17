@@ -210,6 +210,9 @@ A product's primary job is to communicate. If the contrast ratio is too low (e.g
 
 ---
 
+
+</details>
+
 ## ⚡ Next.js Built-in Optimization Components
 
 These three components are Next.js's answer to three of the most common performance problems on the web. They replace their raw HTML equivalents (`<a>`, `<script>`, `<img>`) with smarter, framework-aware versions.
@@ -320,5 +323,3 @@ import Image from 'next/image';
 ```
 
 **Mental Model:** Think of `<Image>` as a **smart compression & delivery pipeline**. Instead of a single fixed image file, it produces a *family* of optimized images and serves exactly the right one to each device.
-
-</details>
