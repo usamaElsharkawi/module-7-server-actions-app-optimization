@@ -209,3 +209,118 @@ A product's primary job is to communicate. If the contrast ratio is too low (e.g
 5. **Visual Hierarchy:** Use color and weight to guide the user's eye to the most important action (the "Primary CTA").
 
 </details>
+
+---
+
+## ⚡ Next.js Built-in Optimization Components
+
+These three components are Next.js's answer to three of the most common performance problems on the web. They replace their raw HTML equivalents (`<a>`, `<script>`, `<img>`) with smarter, framework-aware versions.
+
+<details>
+<summary><strong>🔗 The <code>&lt;Link&gt;</code> Component — Smart Navigation</strong></summary>
+
+**The Problem with `<a>`:** A plain anchor tag triggers a **full browser page reload** on every click — the browser throws away the current page, fetches a new HTML document, re-parses CSS, and re-executes JavaScript. This is slow and loses in-memory state.
+
+**What `<Link>` does instead:**
+
+- **Client-Side Navigation:** The router swaps only the changed page segment in-place. No full reload, no lost state, no white flash between pages.
+- **Automatic Prefetching:** When a `<Link>` scrolls into the viewport, Next.js **silently pre-downloads** that page's JavaScript bundle in the background. By the time the user clicks, the page is already cached — navigation feels instant.
+- **`replace` prop:** Instead of pushing a new entry onto the browser's history stack, it replaces the current one. Useful after a login redirect (so pressing "Back" doesn't send the user back to the login form).
+
+```jsx
+import Link from 'next/link';
+
+// Standard navigation — prefetches on hover/visibility
+<Link href="/dashboard">Go to Dashboard</Link>
+
+// Replaces current history entry instead of pushing a new one
+<Link href="/home" replace>Go Home</Link>
+
+// Disable prefetching for low-priority or auth-gated links
+<Link href="/admin" prefetch={false}>Admin Panel</Link>
+```
+
+**Mental Model:** Think of `<Link>` as a "teleporter" vs. `<a>`'s "car journey." The teleporter pre-stages the destination while you're still looking at it.
+
+</details>
+
+<details>
+<summary><strong>📜 The <code>&lt;Script&gt;</code> Component — Controlled Third-Party Loading</strong></summary>
+
+**The Problem with `<script>`:** A plain script tag **blocks HTML parsing** by default. Every millisecond a third-party script takes to download and execute is a millisecond the user sees a blank or frozen page. Third-party scripts (analytics, chat widgets, etc.) are the #1 cause of poor Interaction to Next Paint (INP) scores.
+
+**What `<Script>` does instead — the `strategy` prop:**
+
+| Strategy | When it Loads | Best For |
+| :--- | :--- | :--- |
+| `beforeInteractive` | Before React hydration | Critical polyfills that must run first |
+| `afterInteractive` (default) | After page hydration | Analytics, tag managers (e.g., Google Analytics) |
+| `lazyOnload` | During browser idle time | Chat widgets, social embeds, low-priority scripts |
+| `worker` | In a Web Worker (off main thread) | Heavy computation that would freeze the UI |
+
+```jsx
+import Script from 'next/script';
+
+// Loads after hydration — safe for most analytics
+<Script src="https://example.com/analytics.js" strategy="afterInteractive" />
+
+// Loads only when the browser is idle — perfect for chat widgets
+<Script src="https://cdn.chat-widget.com/widget.js" strategy="lazyOnload" />
+
+// Run callback when script is ready
+<Script
+  src="https://maps.googleapis.com/maps/api/js"
+  strategy="afterInteractive"
+  onLoad={() => console.log('Maps API ready')}
+/>
+```
+
+**Mental Model:** `strategy` lets you control the **priority queue** of your page. You're telling the browser: "Load user-facing content first; load the analytics spy *after* the user can interact."
+
+</details>
+
+<details>
+<summary><strong>🖼️ The <code>&lt;Image&gt;</code> Component — Automatic Visual Performance</strong></summary>
+
+**The Problem with `<img>`:** A plain image tag serves the file as-is — original format (often PNG/JPEG), original dimensions, loaded immediately regardless of whether it's on-screen. This is the primary cause of three major web performance failures:
+1. **Wasted Bandwidth:** Serving a 2000px image to a 400px mobile screen.
+2. **Slow LCP (Largest Contentful Paint):** The hero image blocks the performance score.
+3. **CLS (Cumulative Layout Shift):** No reserved space causes the page to "jump" when the image loads.
+
+**What `<Image>` does instead — an optimization pipeline built in:**
+
+- **Automatic Format Conversion:** Serves WebP or AVIF (30–50% smaller than JPEG/PNG) to browsers that support it.
+- **Responsive `srcSet`:** Generates multiple sizes automatically. The browser downloads only the resolution it needs.
+- **Lazy Loading by Default:** Images below the fold are not fetched until the user scrolls to them (`loading="lazy"` under the hood).
+- **CLS Prevention:** Requires `width` and `height` (or `fill`) so the browser can reserve the exact space before the image loads — zero layout shift.
+- **`priority` prop:** Disables lazy loading for **above-the-fold** images (the hero/banner). Use this on your LCP image to get a perfect score.
+
+```jsx
+import Image from 'next/image';
+
+// Standard usage — lazy loaded, zero CLS
+<Image
+  src="/hero.jpg"
+  alt="Hero banner"
+  width={1200}
+  height={600}
+/>
+
+// LCP image — disable lazy loading so it loads immediately
+<Image
+  src="/banner.jpg"
+  alt="Main banner"
+  width={1200}
+  height={600}
+  priority
+/>
+
+// Fill a container — image scales to fill its parent div
+<div style={{ position: 'relative', height: '400px' }}>
+  <Image src="/background.jpg" alt="Background" fill style={{ objectFit: 'cover' }} />
+</div>
+```
+
+**Mental Model:** Think of `<Image>` as a **smart compression & delivery pipeline**. Instead of a single fixed image file, it produces a *family* of optimized images and serves exactly the right one to each device.
+
+</details>
