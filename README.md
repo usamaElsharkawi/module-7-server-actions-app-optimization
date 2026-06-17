@@ -176,9 +176,6 @@ Even though Server Actions feel like local functions, they are public HTTP endpo
 | **Serif**      | Formal, Trustworthy    | **Long-form reading.** The "feet" guide the eye across lines of text.         |
 | **Monospace**  | Technical, Precise     | **Code & Data.** Every letter has the same width; things line up vertically.  |
 
-</details>
-
----
 
 ## 🎨 Visual Hierarchy & Accessibility
 
@@ -209,3 +206,8 @@ A product's primary job is to communicate. If the contrast ratio is too low (e.g
 5. **Visual Hierarchy:** Use color and weight to guide the user's eye to the most important action (the "Primary CTA").
 
 </details>
+
+</details>
+
+---
+
